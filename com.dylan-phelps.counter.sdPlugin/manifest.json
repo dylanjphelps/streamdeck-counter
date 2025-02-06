@@ -1,51 +1,48 @@
 {
-	"Name": "Counter",
-	"Version": "0.1.0.0",
-	"Author": "Dylan Phelps",
-	"Actions": [
-		{
-			"Name": "Counter",
-			"UUID": "com.dylan-phelps.counter.increment",
-			"Icon": "imgs/actions/counter/icon",
-			"Tooltip": "Displays a count, which increments by one on press.",
-			"PropertyInspectorPath": "ui/increment-counter.html",
-			"Controllers": [
-				"Keypad",
-				"Encoder"
-			],
-			"Encoder": {
-				"layout": "$A1"
-			},
-			"States": [
-				{
-					"Image": "imgs/actions/counter/key",
-					"TitleAlignment": "middle"
-				}
-			]
-		}
-	],
-	"Category": "Utilities",
-	"CategoryIcon": "imgs/plugin/category-icon",
-	"CodePath": "bin/plugin.js",
-	"Description": "Stream Deck counter that writes to a file.",
-	"Icon": "imgs/plugin/marketplace",
-	"SDKVersion": 2,
-	"Software": {
-		"MinimumVersion": "6.4"
-	},
-	"OS": [
-		{
-			"Platform": "mac",
-			"MinimumVersion": "12"
-		},
-		{
-			"Platform": "windows",
-			"MinimumVersion": "10"
-		}
-	],
-	"Nodejs": {
-		"Version": "20",
-		"Debug": "enabled"
-	},
-	"UUID": "com.dylan-phelps.counter"
+  "Name": "Counter",
+  "Version": "0.1.0.0",
+  "Author": "Dylan Phelps",
+  "Actions": [
+    {
+      "Name": "Counter",
+      "UUID": "com.dylan-phelps.counter.increment",
+      "Icon": "imgs/actions/counter/icon",
+      "Tooltip": "Displays a count, which increments by one on press.",
+      "PropertyInspectorPath": "ui/increment-counter.html",
+      "Controllers": ["Keypad", "Encoder"],
+      "Encoder": {
+        "layout": "$A1"
+      },
+      "States": [
+        {
+          "Image": "imgs/actions/counter/key",
+          "TitleAlignment": "middle"
+        }
+      ]
+    }
+  ],
+  "Category": "Utilities",
+  "CategoryIcon": "imgs/plugin/category-icon",
+  "CodePath": "bin/plugin.js",
+  "Description": "Stream Deck counter that writes to a file.",
+  "Icon": "imgs/plugin/marketplace",
+  "SDKVersion": 2,
+  "Software": {
+    "MinimumVersion": "6.4"
+  },
+  "OS": [
+    {
+      "Platform": "mac",
+      "MinimumVersion": "12"
+    },
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Nodejs": {
+    "Version": "20",
+    "Debug": "enabled"
+  },
+  "UUID": "com.dylan-phelps.counter"
 }

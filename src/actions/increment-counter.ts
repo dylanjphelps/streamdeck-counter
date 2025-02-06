@@ -3,6 +3,7 @@ import streamDeck, {
   DialRotateEvent,
   DidReceiveSettingsEvent,
   KeyDownEvent,
+  KeyUpEvent,
   SingletonAction,
   WillAppearEvent,
 } from "@elgato/streamdeck";
@@ -43,7 +44,14 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
     return ev.action.setTitle(fileContent ?? "0");
   }
 
-  override onKeyDown(ev: KeyDownEvent<CounterSettings>): Promise<void> {
+  override async onKeyDown(ev: KeyDownEvent<CounterSettings>): Promise<void> {
+    return ev.action.setSettings({
+      ...ev.payload.settings,
+      time: Math.round(Date.now()),
+    });
+  }
+
+  override onKeyUp(ev: KeyUpEvent<CounterSettings>): Promise<void> | void {
     const filePath = ev.payload.settings.filePath;
     if (!filePath) {
       return ev.action.showAlert();
@@ -52,11 +60,17 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
     const fileContent = readFileSync(filePath, "utf-8");
 
     let count = Number(fileContent ?? 0);
-    count = count + (ev.payload.settings.incrementBy ?? 1);
+
+    const shouldDecrement = ev.payload.settings.time
+      ? Date.now() - ev.payload.settings.time > 2000
+      : false;
+
+    count = shouldDecrement
+      ? count - 1
+      : count + (ev.payload.settings.incrementBy ?? 1);
 
     writeFileSync(filePath, `${count}`);
 
-    // Update the current count in the action's settings, and change the title.
     return ev.action.setTitle(`${count}`);
   }
 
@@ -84,4 +98,5 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
 type CounterSettings = {
   incrementBy?: number;
   filePath: string;
+  time?: number;
 };
