@@ -496,8 +496,8 @@ var R,
   B,
   A,
   $,
-  M,
   F,
+  M,
   j,
   W,
   G,
@@ -1457,8 +1457,8 @@ function Y() {
     {
       EventTarget: { addEventListener: C, removeEventListener: R },
     } = (function () {
-      if (F) return M;
-      F = 1;
+      if (M) return F;
+      M = 1;
       const { kForOnEventAttribute: e, kListener: t } = I(),
         s = Symbol("kCode"),
         r = Symbol("kData"),
@@ -1571,7 +1571,7 @@ function Y() {
           ? e.handleEvent.call(e, s)
           : e.call(t, s);
       }
-      return (M = {
+      return (F = {
         CloseEvent: d,
         ErrorEvent: u,
         Event: h,
@@ -3213,13 +3213,13 @@ class $e extends be {
     super(e), (this.application = e.payload.application);
   }
 }
-class Me extends be {
+class Fe extends be {
   device;
   constructor(e, t) {
     super(e), (this.device = t);
   }
 }
-class Fe extends be {
+class Me extends be {
   url;
   constructor(e) {
     super(e), (this.url = new We(e.payload.url));
@@ -3765,12 +3765,12 @@ const lt = new (class extends et {
   }
   onDeviceDidConnect(e) {
     return Ce.disposableOn("deviceDidConnect", (t) =>
-      e(new Me(t, this.getDeviceById(t.device))),
+      e(new Fe(t, this.getDeviceById(t.device))),
     );
   }
   onDeviceDidDisconnect(e) {
     return Ce.disposableOn("deviceDidDisconnect", (t) =>
-      e(new Me(t, this.getDeviceById(t.device))),
+      e(new Fe(t, this.getDeviceById(t.device))),
     );
   }
 })();
@@ -3827,7 +3827,7 @@ var ft = Object.freeze({
   onDidReceiveDeepLink: function (e) {
     return (
       dt(6.5, Ce.version, "Receiving deep-link messages"),
-      Ce.disposableOn("didReceiveDeepLink", (t) => e(new Fe(t)))
+      Ce.disposableOn("didReceiveDeepLink", (t) => e(new Me(t)))
     );
   },
   onSystemDidWakeUp: function (e) {
@@ -3992,7 +3992,7 @@ let yt = (() => {
       async onKeyDown(e) {
         return e.action.setSettings({
           ...e.payload.settings,
-          time: Math.round(Date.now()),
+          time: Date.now(),
         });
       }
       onKeyUp(e) {
@@ -4000,15 +4000,34 @@ let yt = (() => {
         if (!t) return e.action.showAlert();
         const s = m(t, "utf-8");
         let r = Number(s ?? 0);
+        const n = e.payload.settings.time
+          ? Date.now() - e.payload.settings.time
+          : 0;
         return (
           (r =
-            !!e.payload.settings.time &&
-            Date.now() - e.payload.settings.time > 2e3
-              ? r - 1
-              : r + (e.payload.settings.incrementBy ?? 1)),
+            n >= 5e3
+              ? 0
+              : n >= 1e3 && n < 5e3
+                ? r - 1
+                : r + (e.payload.settings.incrementBy ?? 1)),
           g(t, `${r}`),
           e.action.setTitle(`${r}`)
         );
+      }
+      onDialDown(e) {
+        return e.action.setSettings({
+          ...e.payload.settings,
+          time: Date.now(),
+        });
+      }
+      onDialUp(e) {
+        const t = e.payload.settings.filePath;
+        if (!t) return e.action.showAlert();
+        return (e.payload.settings.time
+          ? Date.now() - e.payload.settings.time
+          : 0) >= 5e3
+          ? (g(t, "0"), e.action.setFeedback({ value: "0" }))
+          : void 0;
       }
       onDialRotate(e) {
         const t = e.payload.settings.filePath;

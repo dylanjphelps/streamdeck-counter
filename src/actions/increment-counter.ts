@@ -1,6 +1,8 @@
 import streamDeck, {
   action,
+  DialDownEvent,
   DialRotateEvent,
+  DialUpEvent,
   DidReceiveSettingsEvent,
   KeyDownEvent,
   KeyUpEvent,
@@ -60,18 +62,47 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
     const fileContent = readFileSync(filePath, "utf-8");
 
     let count = Number(fileContent ?? 0);
+    const timeElapsed = ev.payload.settings.time
+      ? Date.now() - ev.payload.settings.time
+      : 0;
+    const shouldDecrement = timeElapsed >= 1000 && timeElapsed < 5000;
+    const shouldReset = timeElapsed >= 5000;
 
-    const shouldDecrement = ev.payload.settings.time
-      ? Date.now() - ev.payload.settings.time > 1500
-      : false;
-
-    count = shouldDecrement
-      ? count - 1
-      : count + (ev.payload.settings.incrementBy ?? 1);
+    count = shouldReset
+      ? 0
+      : shouldDecrement
+        ? count - 1
+        : count + (ev.payload.settings.incrementBy ?? 1);
 
     writeFileSync(filePath, `${count}`);
 
     return ev.action.setTitle(`${count}`);
+  }
+
+  override onDialDown(
+    ev: DialDownEvent<CounterSettings>,
+  ): Promise<void> | void {
+    return ev.action.setSettings({
+      ...ev.payload.settings,
+      time: Date.now(),
+    });
+  }
+
+  override onDialUp(ev: DialUpEvent<CounterSettings>): Promise<void> | void {
+    const filePath = ev.payload.settings.filePath;
+    if (!filePath) {
+      return ev.action.showAlert();
+    }
+
+    const timeElapsed = ev.payload.settings.time
+      ? Date.now() - ev.payload.settings.time
+      : 0;
+    const shouldReset = timeElapsed >= 5000;
+
+    if (shouldReset) {
+      writeFileSync(filePath, "0");
+      return ev.action.setFeedback({ value: "0" });
+    }
   }
 
   override onDialRotate(ev: DialRotateEvent<CounterSettings>): Promise<void> {
