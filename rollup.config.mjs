@@ -12,38 +12,44 @@ const sdPlugin = "com.dylan-phelps.counter.sdPlugin";
  * @type {import('rollup').RollupOptions}
  */
 const config = {
-	input: "src/plugin.ts",
-	output: {
-		file: `${sdPlugin}/bin/plugin.js`,
-		sourcemap: isWatching,
-		sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
-			return url.pathToFileURL(path.resolve(path.dirname(sourcemapPath), relativeSourcePath)).href;
-		}
-	},
-	plugins: [
-		{
-			name: "watch-externals",
-			buildStart: function () {
-				this.addWatchFile(`${sdPlugin}/manifest.json`);
-			},
-		},
-		typescript({
-			mapRoot: isWatching ? "./" : undefined
-		}),
-		nodeResolve({
-			browser: false,
-			exportConditions: ["node"],
-			preferBuiltins: true
-		}),
-		commonjs(),
-		!isWatching && terser(),
-		{
-			name: "emit-module-package-file",
-			generateBundle() {
-				this.emitFile({ fileName: "package.json", source: `{ "type": "module" }`, type: "asset" });
-			}
-		}
-	]
+  input: "src/plugin.ts",
+  output: {
+    file: `${sdPlugin}/bin/plugin.js`,
+    sourcemap: isWatching,
+    sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+      return url.pathToFileURL(
+        path.resolve(path.dirname(sourcemapPath), relativeSourcePath),
+      ).href;
+    },
+  },
+  plugins: [
+    {
+      name: "watch-externals",
+      buildStart: function () {
+        this.addWatchFile(`${sdPlugin}/manifest.json`);
+      },
+    },
+    typescript({
+      mapRoot: isWatching ? "./" : undefined,
+    }),
+    nodeResolve({
+      browser: false,
+      exportConditions: ["node"],
+      preferBuiltins: true,
+    }),
+    commonjs(),
+    !isWatching && terser(),
+    {
+      name: "emit-module-package-file",
+      generateBundle() {
+        this.emitFile({
+          fileName: "package.json",
+          source: `{ "type": "module" }`,
+          type: "asset",
+        });
+      },
+    },
+  ],
 };
 
 /*
@@ -53,9 +59,9 @@ const config = {
  * See also https://github.com/rollup/plugins/issues/983
  */
 config.plugins.push({
-	closeBundle() {
-		process.exit(0);
-	},
+  closeBundle() {
+    process.exit(0);
+  },
 });
 /*
  * End of fix.

@@ -10,8 +10,12 @@
 			"Tooltip": "Displays a count, which increments by one on press.",
 			"PropertyInspectorPath": "ui/increment-counter.html",
 			"Controllers": [
-				"Keypad"
+				"Keypad",
+				"Encoder"
 			],
+			"Encoder": {
+				"layout": "$A1"
+			},
 			"States": [
 				{
 					"Image": "imgs/actions/counter/key",
@@ -20,7 +24,7 @@
 			]
 		}
 	],
-	"Category": "Counter",
+	"Category": "Utilities",
 	"CategoryIcon": "imgs/plugin/category-icon",
 	"CodePath": "bin/plugin.js",
 	"Description": "Stream Deck counter that writes to a file.",

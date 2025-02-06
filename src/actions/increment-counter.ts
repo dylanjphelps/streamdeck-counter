@@ -1,41 +1,87 @@
-import { action, KeyDownEvent, SingletonAction, WillAppearEvent } from "@elgato/streamdeck";
+import streamDeck, {
+  action,
+  DialRotateEvent,
+  DidReceiveSettingsEvent,
+  KeyDownEvent,
+  SingletonAction,
+  WillAppearEvent,
+} from "@elgato/streamdeck";
+import { readFileSync, writeFileSync } from "fs";
 
-/**
- * An example action class that displays a count that increments by one each time the button is pressed.
- */
 @action({ UUID: "com.dylan-phelps.counter.increment" })
 export class IncrementCounter extends SingletonAction<CounterSettings> {
-	/**
-	 * The {@link SingletonAction.onWillAppear} event is useful for setting the visual representation of an action when it becomes visible. This could be due to the Stream Deck first
-	 * starting up, or the user navigating between pages / folders etc.. There is also an inverse of this event in the form of {@link streamDeck.client.onWillDisappear}. In this example,
-	 * we're setting the title to the "count" that is incremented in {@link IncrementCounter.onKeyDown}.
-	 */
-	override onWillAppear(ev: WillAppearEvent<CounterSettings>): void | Promise<void> {
-		return ev.action.setTitle(`${ev.payload.settings.count ?? 0}`);
-	}
+  override onWillAppear(
+    ev: WillAppearEvent<CounterSettings>,
+  ): void | Promise<void> {
+    const filePath = ev.payload.settings.filePath;
+    if (!filePath) {
+      return ev.action.showAlert();
+    }
 
-	/**
-	 * Listens for the {@link SingletonAction.onKeyDown} event which is emitted by Stream Deck when an action is pressed. Stream Deck provides various events for tracking interaction
-	 * with devices including key down/up, dial rotations, and device connectivity, etc. When triggered, {@link ev} object contains information about the event including any payloads
-	 * and action information where applicable. In this example, our action will display a counter that increments by one each press. We track the current count on the action's persisted
-	 * settings using `setSettings` and `getSettings`.
-	 */
-	override async onKeyDown(ev: KeyDownEvent<CounterSettings>): Promise<void> {
-		// Update the count from the settings.
-		const { settings } = ev.payload;
-		settings.incrementBy ??= 1;
-		settings.count = (settings.count ?? 0) + settings.incrementBy;
+    const fileContent = readFileSync(filePath, "utf-8");
+    if (ev.action.isDial()) {
+      return ev.action.setFeedback({ value: fileContent ?? "0" });
+    }
 
-		// Update the current count in the action's settings, and change the title.
-		await ev.action.setSettings(settings);
-		await ev.action.setTitle(`${settings.count}`);
-	}
+    return ev.action.setTitle(fileContent ?? "0");
+  }
+
+  override onDidReceiveSettings(
+    ev: DidReceiveSettingsEvent<CounterSettings>,
+  ): Promise<void> | void {
+    const filePath = ev.payload.settings.filePath;
+    if (!filePath) {
+      return ev.action.showAlert();
+    }
+
+    const fileContent = readFileSync(filePath, "utf-8");
+
+    if (ev.action.isDial()) {
+      return ev.action.setFeedback({ value: fileContent ?? "0" });
+    }
+
+    return ev.action.setTitle(fileContent ?? "0");
+  }
+
+  override onKeyDown(ev: KeyDownEvent<CounterSettings>): Promise<void> {
+    const filePath = ev.payload.settings.filePath;
+    if (!filePath) {
+      return ev.action.showAlert();
+    }
+
+    const fileContent = readFileSync(filePath, "utf-8");
+
+    let count = Number(fileContent ?? 0);
+    count = count + (ev.payload.settings.incrementBy ?? 1);
+
+    writeFileSync(filePath, `${count}`);
+
+    // Update the current count in the action's settings, and change the title.
+    return ev.action.setTitle(`${count}`);
+  }
+
+  override onDialRotate(ev: DialRotateEvent<CounterSettings>): Promise<void> {
+    const filePath = ev.payload.settings.filePath;
+    if (!filePath) {
+      return ev.action.showAlert();
+    }
+
+    const fileContent = readFileSync(filePath, "utf-8");
+    let count = Number(fileContent ?? 0);
+
+    if (ev.payload.ticks < 0) {
+      count = count - 1;
+    } else {
+      count = count + (ev.payload.settings.incrementBy ?? 1);
+    }
+
+    writeFileSync(filePath, `${count}`);
+
+    return ev.action.setFeedback({ value: count });
+  }
 }
 
-/**
- * Settings for {@link IncrementCounter}.
- */
 type CounterSettings = {
-	count?: number;
-	incrementBy?: number;
+  incrementBy?: number;
+  filePath: string;
 };
