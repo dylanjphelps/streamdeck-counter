@@ -47,7 +47,7 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
   override async onKeyDown(ev: KeyDownEvent<CounterSettings>): Promise<void> {
     return ev.action.setSettings({
       ...ev.payload.settings,
-      time: Math.round(Date.now()),
+      time: Date.now(),
     });
   }
 
@@ -62,7 +62,7 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
     let count = Number(fileContent ?? 0);
 
     const shouldDecrement = ev.payload.settings.time
-      ? Date.now() - ev.payload.settings.time > 2000
+      ? Date.now() - ev.payload.settings.time > 1500
       : false;
 
     count = shouldDecrement
