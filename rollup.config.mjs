@@ -52,19 +52,4 @@ const config = {
   ],
 };
 
-/*
- * This is an intermediary fix for an upstream issue that causes the build process to hang indefinitely (particularly on macOS).
- * As part of the creation of the plugin, this temporary rollup-plugin is applied during the build step, but removed as part of
- * the finalizing process. If you're seeing this as part of the final output, you can safely remove it.
- * See also https://github.com/rollup/plugins/issues/983
- */
-config.plugins.push({
-  closeBundle() {
-    process.exit(0);
-  },
-});
-/*
- * End of fix.
- */
-
 export default config;

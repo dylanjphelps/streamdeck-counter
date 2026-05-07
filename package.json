@@ -7,7 +7,7 @@
   },
   "type": "module",
   "devDependencies": {
-    "@elgato/cli": "^1.1.1",
+    "@elgato/cli": "1.7.4",
     "@elgato/prettier-config": "^0.2.5",
     "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-node-resolve": "^15.2.2",
@@ -15,12 +15,12 @@
     "@rollup/plugin-typescript": "^12.1.0",
     "@tsconfig/node20": "^20.1.2",
     "@types/node": "~20.15.0",
+    "prettier": "@elgato/prettier-config",
     "rollup": "^4.0.2",
     "tslib": "^2.6.2",
-    "typescript": "^5.2.2",
-    "prettier": "@elgato/prettier-config"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@elgato/streamdeck": "^1.0.0"
+    "@elgato/streamdeck": "2.1.0"
   }
 }

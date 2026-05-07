@@ -21,7 +21,13 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
       return ev.action.showAlert();
     }
 
-    const fileContent = readFileSync(filePath, "utf-8");
+    let fileContent: string;
+    try {
+      fileContent = readFileSync(filePath, "utf-8");
+    } catch {
+      return ev.action.showAlert();
+    }
+
     if (ev.action.isDial()) {
       return ev.action.setFeedback({ value: fileContent ?? "0" });
     }
@@ -37,7 +43,12 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
       return ev.action.showAlert();
     }
 
-    const fileContent = readFileSync(filePath, "utf-8");
+    let fileContent: string;
+    try {
+      fileContent = readFileSync(filePath, "utf-8");
+    } catch {
+      return ev.action.showAlert();
+    }
 
     if (ev.action.isDial()) {
       return ev.action.setFeedback({ value: fileContent ?? "0" });
@@ -59,7 +70,12 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
       return ev.action.showAlert();
     }
 
-    const fileContent = readFileSync(filePath, "utf-8");
+    let fileContent: string;
+    try {
+      fileContent = readFileSync(filePath, "utf-8");
+    } catch {
+      return ev.action.showAlert();
+    }
 
     let count = Number(fileContent ?? 0);
     const timeElapsed = ev.payload.settings.time
@@ -111,7 +127,13 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
       return ev.action.showAlert();
     }
 
-    const fileContent = readFileSync(filePath, "utf-8");
+    let fileContent: string;
+    try {
+      fileContent = readFileSync(filePath, "utf-8");
+    } catch {
+      return ev.action.showAlert();
+    }
+
     let count = Number(fileContent ?? 0);
 
     if (ev.payload.ticks < 0) {
@@ -122,7 +144,7 @@ export class IncrementCounter extends SingletonAction<CounterSettings> {
 
     writeFileSync(filePath, `${count}`);
 
-    return ev.action.setFeedback({ value: count });
+    return ev.action.setFeedback({ value: `${count}` });
   }
 }
 
